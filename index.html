@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ajax-1</title>
+    <style>
+      .container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 97vh;
+      }
+      ul {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        list-style: none;
+      }
+      li {
+        border: 2px solid red;
+        padding: 1vw;
+      }
+      a{
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>API Sample</h1>
+      <form id="githubForm">
+        <input
+          type="text"
+          id="usernameInput"
+          placeholder="Github username..."
+        />
+        <button type="submit">Pull User Data</button>
+      </form>
+      <h2 id="loading-bar">Loading...</h2>
+
+      <ul id="repoList"></ul>
+    </div>
+
+    <script>
+      const githubForm = document.getElementById("githubForm");
+      const usernameInput = document.getElementById("usernameInput");
+      const repoList = document.getElementById("repoList");
+      const loading = document.getElementById("loading-bar");
+
+      loading.style.display = "none";
+      githubForm.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const username = usernameInput.value;
+
+        loading.style.display = "block";
+        const response = await fetch(
+          `https://api.github.com/users/${username}/repos`
+        );
+        loading.style.display = "none";
+
+        if (response.ok) {
+          const data = await response.json();
+          displayRepos(data);
+        } else {
+          alert("User not found or an error occurred.");
+        }
+      });
+
+      function displayRepos(repos) {
+        repoList.innerHTML = ""; // Clear previous list
+
+        repos.forEach((repo) => {
+          const listItem = document.createElement("li");
+          const link = document.createElement("a");
+          link.href = repo.html_url;
+          link.target = "_blank";
+          link.textContent = repo.name;
+          listItem.appendChild(link);
+          repoList.appendChild(listItem);
+        });
+      }
+    </script>
+  </body>
+</html>
